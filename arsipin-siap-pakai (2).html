@@ -1,0 +1,1253 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arsipin — PT. Ascon Inovasi Data</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
+  :root{
+    --bg: #eef6ff;
+    --bg-2: #dfeeff;
+    --paper: rgba(255, 255, 255, 0.92);
+    --paper-strong: #ffffff;
+    --surface: #f7faff;
+    --ink: #17314f;
+    --ink-2: #345077;
+    --ink-muted: #60789a;
+    --line: rgba(77, 120, 185, 0.16);
+    --line-strong: rgba(77, 120, 185, 0.26);
+    --forest: #eaf4ff;
+    --forest-light: #e8f3ff;
+    --forest-mid: #67a8ff;
+    --tan: #ff9f43;
+    --tan-light: #fff3e7;
+    --rust: #ff7b72;
+    --rust-light: rgba(255, 123, 114, 0.12);
+    --danger: #ff7b72;
+    --accent: #1d6ff2;
+    --accent-soft: rgba(29, 111, 242, 0.12);
+    --radius-sm: 10px;
+    --radius: 16px;
+    --shadow: 0 20px 40px rgba(26, 76, 138, 0.12);
+    --shadow-lg: 0 28px 60px rgba(24, 67, 118, 0.15);
+  }
+  *{box-sizing:border-box;}
+  *:focus-visible{
+    outline:2px solid rgba(101,181,255,0.7);
+    outline-offset:2px;
+  }
+  body{
+    margin:0;
+    font-family:"DM Sans", "Segoe UI", sans-serif;
+    background:
+      radial-gradient(circle at top right, rgba(29,111,242,0.12), transparent 25rem),
+      radial-gradient(circle at left center, rgba(255,159,67,0.10), transparent 22rem),
+      linear-gradient(180deg, var(--bg) 0%, var(--bg-2) 100%);
+    color:var(--ink);
+  }
+  button, input, select, textarea {
+    font:inherit;
+  }
+  h1,h2,h3,.serif{
+    font-family:"Space Grotesk", "Segoe UI", sans-serif;
+    font-weight:600;
+    letter-spacing:-0.4px;
+  }
+  .auth-screen{
+    min-height:100vh;
+    display:grid;
+    place-items:center;
+    padding:32px 18px;
+    background:
+      radial-gradient(circle at top, rgba(29,111,242,0.12), transparent 30%),
+      linear-gradient(180deg, #f4f9ff 0%, #edf5ff 100%);
+  }
+  .auth-box{
+    width:min(760px, 100%);
+    background:linear-gradient(180deg, rgba(17,28,40,0.98), rgba(9,17,27,0.98));
+    border:1px solid rgba(143,175,220,0.14);
+    border-radius:28px;
+    box-shadow:var(--shadow-lg);
+    padding:28px;
+    --ink: #f6fbff;
+    --ink-2: #edf5ff;
+    --ink-muted: #bfd3ee;
+  }
+  .auth-header{
+    text-align:center;
+    margin-bottom:26px;
+  }
+  .auth-pill{
+    display:inline-block;
+    background:rgba(29,111,242,0.12);
+    border:1px solid rgba(129,171,255,0.28);
+    color:#ffffff;
+    border-radius:999px;
+    padding:6px 12px;
+    font-size:11px;
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+  }
+  .auth-title{
+    margin:14px 0 8px;
+    font-size:clamp(2rem, 5vw, 3rem);
+    line-height:1.1;
+  }
+  .auth-subtitle{
+    color:var(--ink-muted);
+    font-size:14px;
+  }
+  .role-grid{
+    display:grid;
+    grid-template-columns:repeat(2, minmax(0, 1fr));
+    gap:18px;
+    margin-top:22px;
+  }
+  .role-option{
+    appearance:none;
+    border:1px solid var(--line);
+    background:linear-gradient(180deg, rgba(19,30,42,.9), rgba(13,21,32,.9));
+    border-radius:20px;
+    padding:24px 18px;
+    color:#ffffff;
+    cursor:pointer;
+    text-align:left;
+    transition:all .2s ease;
+    position:relative;
+    overflow:hidden;
+  }
+  .role-option:hover{ transform:translateY(-2px); border-color:rgba(101,181,255,0.4); }
+  .role-option.selected{
+    background:linear-gradient(135deg, rgba(29,111,242,0.10), rgba(255,255,255,0.98));
+    border-color:rgba(29,111,242,0.45);
+    box-shadow:0 18px 28px rgba(29,111,242,0.12);
+  }
+  .role-option input{ display:none; }
+  .role-number{
+    width:36px;height:36px;border-radius:12px;
+    display:flex;align-items:center;justify-content:center;
+    background:rgba(101,181,255,0.12);
+    color:#dfeeff;
+    font-weight:700;
+    margin-bottom:16px;
+  }
+  .role-option h3{
+    margin:0 0 8px;
+    font-size:1.5rem;
+  }
+  .role-option p{
+    margin:0;
+    color:#dfeafc;
+    font-size:13px;
+    line-height:1.6;
+  }
+  .role-option.selected .role-number{ background:rgba(255,191,117,0.16); color:var(--tan); }
+  .auth-form{
+    margin-top:22px;
+    display:grid;
+    gap:14px;
+  }
+  .field-wrap{
+    display:grid;
+    gap:8px;
+  }
+  .field-wrap label{
+    color:#edf5ff;
+    font-size:12px;
+    font-weight:600;
+  }
+  .field-wrap input{
+    width:100%;
+    padding:12px 14px;
+    border-radius:12px;
+    border:1px solid var(--line);
+    background:rgba(19,30,42,0.9);
+    color:#ffffff;
+    font-size:14px;
+  }
+  .field-wrap input:focus{
+    outline:none;
+    border-color:rgba(101,181,255,0.5);
+    box-shadow:0 0 0 4px rgba(101,181,255,0.08);
+  }
+  .auth-actions{
+    margin-top:24px;
+    display:flex;
+    justify-content:flex-end;
+  }
+  .app{
+    display:grid;
+    grid-template-columns:260px 1fr;
+    min-height:100vh;
+    background:rgba(10, 18, 28, 0.7);
+    border:1px solid rgba(144,167,197,0.12);
+    border-radius:28px;
+    overflow:hidden;
+    box-shadow:var(--shadow-lg);
+    backdrop-filter:blur(14px);
+  }
+  .app.hidden{ display:none; }
+
+  /* SIDEBAR */
+  .sidebar{
+    background:linear-gradient(180deg, rgba(7,20,31,0.96), rgba(19,35,54,0.96));
+    color:#edf5ff;
+    padding:26px 18px;
+    display:flex;
+    flex-direction:column;
+    gap:30px;
+    box-shadow:inset -1px 0 0 rgba(144,167,197,0.12);
+    position:relative;
+    --ink: #edf5ff;
+    --ink-2: #dfeafc;
+    --ink-muted: #a7bdd9;
+  }
+  .sidebar::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:radial-gradient(circle at top, rgba(101,181,255,0.14), transparent 38%);
+    pointer-events:none;
+  }
+  .brand,.nav-group-label,.nav-list,.storage-box{position:relative;z-index:1;}
+  .brand{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:0 6px;
+  }
+  .brand-mark{
+    width:40px;height:40px;
+    border-radius:12px;
+    background:linear-gradient(135deg, var(--tan), #ffdca7);
+    display:flex;align-items:center;justify-content:center;
+    color:#11263d;
+    font-family:"Space Grotesk", sans-serif;
+    font-weight:700;
+    font-size:17px;
+    box-shadow:0 12px 30px rgba(255,191,117,0.3);
+  }
+  .brand-name{font-family:"Space Grotesk", sans-serif;font-size:21px;font-weight:700;}
+  .brand-sub{font-size:11px;color:rgba(237,245,255,0.7);margin-top:1px;}
+
+  .nav-group-label{
+    font-size:11px;
+    color:rgba(237,245,255,0.58);
+    padding:0 10px;
+    margin-bottom:6px;
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+  }
+  .nav-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;}
+  .nav-item{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:12px 12px;
+    border-radius:12px;
+    cursor:pointer;
+    font-size:14px;
+    color:#dfeafc;
+    border-left:3px solid transparent;
+    transition:all .2s ease;
+  }
+  .nav-item:hover{background:rgba(255,255,255,0.05);transform:translateX(2px);}
+  .nav-item.active{
+    background:linear-gradient(135deg, rgba(101,181,255,0.17), rgba(255,255,255,0.05));
+    border-left:3px solid var(--tan);
+    color:#fff;
+    box-shadow:inset 0 0 0 1px rgba(255,255,255,0.04);
+  }
+  .nav-count{
+    font-size:11px;
+    color:rgba(237,245,255,0.72);
+    background:rgba(255,255,255,0.08);
+    padding:2px 8px;
+    border-radius:999px;
+  }
+  .nav-item.active .nav-count{color:#fff;background:rgba(255,255,255,0.14);}
+
+  .storage-box{
+    margin-top:auto;
+    background:rgba(255,255,255,0.04);
+    border:1px solid rgba(144,167,197,0.14);
+    border-radius:14px;
+    padding:12px;
+    font-size:12px;
+    color:#dce9fb;
+  }
+  .storage-bar{
+    height:6px;background:rgba(255,255,255,0.1);border-radius:999px;margin:8px 0;overflow:hidden;
+  }
+  .storage-fill{height:100%;background:linear-gradient(90deg, var(--tan), #ffe0a7);width:38%;}
+
+  /* MAIN */
+  .main{
+    padding:30px clamp(20px, 4vw, 56px) 48px;max-width:1500px;width:100%;
+    position:relative;
+    background:linear-gradient(180deg, rgba(14,23,34,0.96), rgba(10,18,28,0.96));
+    --ink: #edf5ff;
+    --ink-2: #dfeafc;
+    --ink-muted: #a7bdd9;
+  }
+  .main::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:
+      radial-gradient(circle at 15% 10%, rgba(101,181,255,0.16), transparent 28%),
+      radial-gradient(circle at 85% 5%, rgba(103,217,232,0.12), transparent 26%);
+    animation: ambientGlow 12s ease-in-out infinite alternate;
+    pointer-events:none;
+  }
+  .topbar{
+    display:flex;align-items:center;gap:14px;margin-bottom:22px;flex-wrap:wrap;position:relative;z-index:1;
+  }
+  .search-box{
+    flex:1;min-width:220px;
+    display:flex;align-items:center;gap:8px;
+    background:rgba(19, 30, 42, 0.88);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:11px 14px;
+    box-shadow:0 12px 24px rgba(3,9,15,0.28);
+    transition:all .2s ease;
+  }
+  .search-box:focus-within{
+    border-color:rgba(101,181,255,0.5);
+    box-shadow:0 0 0 4px rgba(101,181,255,0.08), 0 14px 28px rgba(3,9,15,0.3);
+  }
+  .search-box input{
+    border:none;outline:none;background:transparent;flex:1;font-size:14px;color:var(--ink);
+  }
+  .icon{width:16px;height:16px;flex-shrink:0;color:var(--ink-muted);}
+  select, .btn{
+    font-family:inherit;font-size:13px;
+    border:1px solid var(--line);
+    background:rgba(19, 30, 42, 0.9);
+    color:var(--ink);
+    border-radius:12px;
+    padding:10px 13px;
+    cursor:pointer;
+    transition:all .18s ease;
+  }
+  select:hover, .btn:hover{border-color:rgba(101,181,255,0.52); box-shadow:0 8px 18px rgba(5,15,24,0.22);}
+  .btn-primary{
+    background:linear-gradient(135deg, #1f5d94, #1a7ed6);
+    color:#fff;border-color:transparent;
+    display:flex;align-items:center;gap:6px;font-weight:600;
+    box-shadow:0 14px 28px rgba(26,126,214,0.28);
+  }
+  .btn-primary:hover{transform:translateY(-1px); box-shadow:0 18px 32px rgba(26,126,214,0.35);}
+  .view-toggle{display:flex;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:rgba(19,30,42,0.9);}
+  .view-toggle button{
+    border:none;background:transparent;padding:9px 10px;cursor:pointer;color:var(--ink-muted);
+  }
+  .view-toggle button.active{background:rgba(101,181,255,0.12);color:#dff3ff;}
+
+  .page-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:16px;position:relative;z-index:1;}
+  .page-title{font-size:28px;color:var(--ink);}
+  .page-desc{font-size:13px;color:var(--ink-muted);margin-top:2px;}
+  .result-count{font-size:12px;color:var(--ink-muted); background:rgba(19,30,42,0.75); border:1px solid var(--line); border-radius:999px; padding:7px 10px; }
+
+  .doc-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(210px, 1fr));
+    gap:18px;
+    position:relative;z-index:1;
+  }
+  .doc-card{
+    background:linear-gradient(180deg, rgba(18,31,44,0.95), rgba(12,21,33,0.95));
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:18px;
+    cursor:pointer;
+    opacity:0;
+    transform:translateY(10px);
+    animation: fadeUp .55s ease forwards;
+    transition:all .22s ease;
+    box-shadow:0 16px 32px rgba(2, 8, 15, 0.25);
+    --ink: #edf5ff;
+    --ink-2: #dfeafc;
+    --ink-muted: #a7bdd9;
+  }
+  .doc-card:hover{border-color:rgba(101,181,255,0.44);box-shadow:0 18px 34px rgba(2,8,15,0.36);transform:translateY(-3px) scale(1.01);}
+  .doc-icon-row{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;}
+  .doc-icon{
+    width:42px;height:42px;border-radius:12px;
+    background:rgba(101,181,255,0.12);color:#dff3ff;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:inset 0 0 0 1px rgba(255,255,255,0.04);
+  }
+  .doc-type-pdf{background:rgba(255,123,114,0.12);color:var(--rust);}
+  .doc-type-img{background:rgba(255,191,117,0.12);color:var(--tan);}
+  .doc-menu{color:var(--ink-muted);cursor:pointer;padding:2px;}
+  .doc-title{font-size:13.5px;font-weight:600;margin:0 0 4px;line-height:1.35;}
+  .doc-meta{font-size:11.5px;color:var(--ink-muted);}
+  .doc-tag{
+    display:inline-block;margin-top:9px;font-size:10.5px;
+    background:rgba(101,181,255,0.12);color:#dfeeff;
+    padding:2px 8px;border-radius:10px;
+  }
+  .doc-menu-wrap{position:relative;}
+  .doc-action-menu{
+    position:absolute;right:0;top:calc(100% + 8px);z-index:20;
+    min-width:150px;background:var(--paper);border:1px solid var(--line);
+    border-radius:12px;box-shadow:var(--shadow-lg);padding:6px;
+    display:none;
+  }
+  .doc-menu-wrap.open .doc-action-menu{display:block;}
+  .menu-item{
+    display:flex;align-items:center;gap:8px;width:100%;
+    border:none;background:transparent;padding:8px 10px;font-size:13px;
+    color:var(--ink);border-radius:var(--radius-sm);text-align:left;cursor:pointer;
+  }
+  .menu-item:hover{background:var(--forest-light);}
+  .menu-item.danger{color:var(--rust);}
+  .menu-item.danger:hover{background:var(--rust-light);}
+
+  .doc-list{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:18px;overflow:hidden;background:rgba(18,31,44,0.95);box-shadow:var(--shadow);position:relative;z-index:1;}
+  .doc-row{
+    display:grid;grid-template-columns:34px 1.6fr 1fr 100px 90px;
+    align-items:center;gap:12px;
+    padding:11px 14px;
+    border-bottom:1px solid var(--line);
+    cursor:pointer;font-size:13px;
+    opacity:0;
+    transform:translateY(8px);
+    animation: fadeUp .5s ease forwards;
+    transition:all .18s ease;
+  }
+  .doc-row:last-child{border-bottom:none;}
+  .doc-row:hover{background:rgba(101,181,255,0.08);transform:translateX(2px);}
+  .doc-row .doc-meta{color:var(--ink-muted);font-size:12px;}
+  .row-icon{
+    width:26px;height:26px;border-radius:8px;background:rgba(101,181,255,0.12);color:#dff3ff;
+    display:flex;align-items:center;justify-content:center;
+  }
+
+  .hidden{display:none !important;}
+  .empty-state{
+    text-align:center;padding:70px 20px;color:var(--ink-muted);
+  }
+  .empty-state .icon{width:34px;height:34px;margin:0 auto 10px;color:var(--line-strong);}
+
+  /* MODAL / DETAIL PANEL */
+  .overlay{
+    position:fixed;inset:0;background:rgba(2,8,15,0.68);backdrop-filter:blur(6px);
+    display:flex;align-items:center;justify-content:flex-end;
+    z-index:50;
+  }
+  .overlay.center{justify-content:center;}
+  .panel{
+    background:linear-gradient(180deg, rgba(16,25,35,0.98), rgba(10,18,28,0.98));
+    width:380px;max-width:92vw;height:100%;
+    padding:24px;overflow-y:auto;
+    box-shadow:var(--shadow-lg);
+    border-radius:18px 0 0 18px;
+    border-left:1px solid rgba(144,167,197,0.12);
+    --ink: #edf5ff;
+    --ink-2: #dfeafc;
+    --ink-muted: #a7bdd9;
+  }
+  .modal{
+    background:linear-gradient(180deg, rgba(16,25,35,0.98), rgba(10,18,28,0.98));
+    width:440px;max-width:92vw;
+    border-radius:18px;
+    padding:24px;
+    box-shadow:var(--shadow-lg);
+    border:1px solid rgba(144,167,197,0.12);
+    --ink: #edf5ff;
+    --ink-2: #dfeafc;
+    --ink-muted: #a7bdd9;
+  }
+  .panel-close, .modal-close{
+    float:right;cursor:pointer;color:var(--ink-muted);background:none;border:none;font-size:18px;
+  }
+  .detail-icon{
+    width:52px;height:52px;border-radius:8px;background:rgba(101,181,255,0.12);color:#dff3ff;
+    display:flex;align-items:center;justify-content:center;margin-bottom:14px;
+  }
+  .detail-title{font-size:17px;margin:0 0 4px;}
+  .detail-sub{font-size:12px;color:var(--ink-muted);margin-bottom:18px;}
+  .detail-section{margin-bottom:16px;}
+  .detail-label{font-size:11px;color:var(--ink-muted);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:6px;}
+  .detail-row{display:flex;justify-content:space-between;font-size:13px;padding:7px 0;border-bottom:1px solid var(--line);}
+  .action-row{display:flex;gap:8px;margin-top:18px;flex-wrap:wrap;}
+  .action-row .btn{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;font-size:12.5px;}
+  .action-row .btn-danger{color:var(--rust);border-color:var(--rust-light);}
+  .action-row .btn-danger:hover{background:var(--rust-light);}
+  .btn-secondary{background:var(--surface);color:var(--ink);border-color:var(--line);}
+
+  .form-group{margin-bottom:14px;}
+  .form-group label{display:block;font-size:12.5px;color:var(--ink-2);margin-bottom:5px;}
+  .form-group input[type=text], .form-group select, .form-group textarea{
+    width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:var(--radius-sm);font-size:13.5px;font-family:inherit;
+  }
+  .dropzone{
+    border:1.5px dashed var(--line-strong);
+    border-radius:14px;
+    background:#f8fbfd;
+    padding:26px 14px;text-align:center;color:var(--ink-muted);font-size:13px;margin-bottom:16px;
+  }
+  .dropzone .icon{width:26px;height:26px;margin:0 auto 8px;}
+
+  .toast-wrap{position:fixed;bottom:22px;right:22px;display:flex;flex-direction:column;gap:8px;z-index:100;}
+  .toast{
+    background:linear-gradient(135deg, #1a7ed6, #1d5f97);color:#fff;padding:12px 16px;border-radius:12px;
+    font-size:13px;box-shadow:var(--shadow-lg);display:flex;align-items:center;gap:8px;
+    animation:slidein .18s ease-out;
+  }
+  .toast.rust{background:linear-gradient(135deg, var(--rust), #ff8a7f);}
+  @keyframes slidein{from{transform:translateY(8px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(14px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes ambientGlow {
+    0% { opacity: 0.7; transform: scale(1); }
+    100% { opacity: 1; transform: scale(1.06); }
+  }
+
+  @media (max-width:760px){
+    .app{grid-template-columns:1fr;}
+    .sidebar{flex-direction:row;overflow-x:auto;align-items:center;padding:12px;gap:16px;}
+    .brand-sub,.nav-group-label{display:none;}
+    .brand{flex-shrink:0;}
+    .nav-list{gap:6px;}
+    .nav-item{white-space:nowrap;padding:9px 11px;}
+    .main{padding:22px 16px 34px;}
+    .page-head{align-items:flex-start;gap:8px;}
+    .page-title{font-size:24px;}
+    .topbar{margin-bottom:24px;}
+    .search-box{order:1;flex-basis:100%;}
+    .topbar > select{flex:1;}
+    .btn-primary{flex:1;justify-content:center;}
+    .doc-row{grid-template-columns:34px 1fr 74px;}
+    .doc-row > :nth-child(3){display:none;}
+    .doc-row > :nth-child(5){display:none;}
+    .panel{border-radius:18px 0 0 18px;padding:22px;width:390px;}
+    .nav-list{flex-direction:row;}
+    .storage-box{display:none;}
+  }
+</style>
+</head>
+<body>
+
+<div class="auth-screen" id="authScreen">
+  <div class="auth-box">
+    <div class="auth-header">
+      <span class="auth-pill">Akses sistem</span>
+      <h1 class="auth-title serif">Pilih peran Anda</h1>
+      <div class="auth-subtitle">Silakan pilih akses masuk sesuai tugas Anda di sistem Arsipin.</div>
+    </div>
+
+    <div class="role-grid">
+      <label class="role-option selected" data-role="admin">
+        <input type="radio" name="role" value="admin" checked>
+        <div class="role-number">1</div>
+        <h3 class="serif">Admin</h3>
+        <p>Kelola dokumen, arsip, kategori, dan data sistem secara penuh.</p>
+      </label>
+
+      <label class="role-option" data-role="pengawas">
+        <input type="radio" name="role" value="pengawas">
+        <div class="role-number">2</div>
+        <h3 class="serif">Pengawas</h3>
+        <p>Memantau dan melihat arsip serta status dokumen dengan akses terbatas.</p>
+      </label>
+    </div>
+
+    <div class="auth-form">
+      <div class="field-wrap">
+        <label for="passwordInput">Sandi</label>
+        <input id="passwordInput" type="password" placeholder="Masukkan sandi Anda" autocomplete="current-password">
+      </div>
+    </div>
+
+    <div class="auth-actions">
+      <button class="btn btn-primary" id="enterDashboardBtn">Masuk ke dashboard</button>
+    </div>
+  </div>
+</div>
+
+<div class="app hidden" id="appShell">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">A</div>
+      <div>
+        <div class="brand-name">Arsipin</div>
+        <div class="brand-sub">PT. Ascon Inovasi Data</div>
+      </div>
+    </div>
+
+    <div>
+      <div class="nav-group-label">KATEGORI</div>
+      <ul class="nav-list" id="navList">
+        <li class="nav-item active" data-cat="semua"><span>Semua dokumen</span><span class="nav-count">12</span></li>
+        <li class="nav-item" data-cat="masuk"><span>Surat masuk</span><span class="nav-count">3</span></li>
+        <li class="nav-item" data-cat="keluar"><span>Surat keluar</span><span class="nav-count">2</span></li>
+        <li class="nav-item" data-cat="nota"><span>Nota dinas</span><span class="nav-count">2</span></li>
+        <li class="nav-item" data-cat="kontrak"><span>Kontrak & MoU</span><span class="nav-count">2</span></li>
+        <li class="nav-item" data-cat="sk"><span>SK & keputusan</span><span class="nav-count">2</span></li>
+        <li class="nav-item" data-cat="foto"><span>Arsip foto</span><span class="nav-count">1</span></li>
+        <li class="nav-item" data-cat="sampah"><span>Terhapus</span><span class="nav-count" id="trashCount">0</span></li>
+      </ul>
+    </div>
+
+    <div class="storage-box">
+      <div style="display:flex;justify-content:space-between;"><span>Penyimpanan</span><span>3.8/10 GB</span></div>
+      <div class="storage-bar"><div class="storage-fill"></div></div>
+      <div style="color:#9BAFA4;">Sisa ruang masih cukup.</div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <div class="topbar">
+      <div class="search-box">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input id="searchInput" type="text" placeholder="Cari nama dokumen atau nomor arsip...">
+      </div>
+      <select id="sortSelect">
+        <option value="terbaru">Urutkan: Terbaru</option>
+        <option value="terlama">Urutkan: Terlama</option>
+        <option value="az">Urutkan: A–Z</option>
+      </select>
+      <div class="view-toggle">
+        <button id="gridBtn" class="active" title="Tampilan grid">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        </button>
+        <button id="listBtn" title="Tampilan daftar">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg>
+        </button>
+      </div>
+      <button class="btn btn-primary" id="uploadBtn">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M12 3v12"/><path d="M7 8l5-5 5 5"/><path d="M4 21h16"/></svg>
+        Unggah dokumen
+      </button>
+    </div>
+
+    <div class="page-head">
+      <div>
+        <div class="page-title serif" id="pageTitle">Semua dokumen</div>
+        <div class="page-desc" id="pageDesc">Seluruh arsip yang tersimpan di sistem.</div>
+      </div>
+      <div class="result-count" id="resultCount">12 dokumen</div>
+    </div>
+
+    <div id="gridView" class="doc-grid"></div>
+    <div id="listView" class="doc-list hidden"></div>
+    <div id="emptyState" class="empty-state hidden">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 4h16v16H4z"/><path d="M4 9h16"/></svg>
+      <div>Tidak ada dokumen yang cocok.</div>
+    </div>
+  </main>
+</div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script>
+const svgIcons = {
+  doc: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg>',
+  pdf: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 15h1"/><path d="M9 12h6"/></svg>',
+  img: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>',
+  dots: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="6" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="18" r="1"/></svg>',
+  x: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',
+  download: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 21h16"/></svg>',
+  share: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.6" y1="13.5" x2="15.4" y2="17.5"/><line x1="15.4" y1="6.5" x2="8.6" y2="10.5"/></svg>',
+  trash: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/></svg>',
+  check: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>',
+  upload: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 3v12"/><path d="M7 8l5-5 5 5"/><path d="M4 21h16"/></svg>',
+};
+
+const escapeHtml = (value = '') => String(value)
+  .replace(/&/g, '&amp;')
+  .replace(/</g, '&lt;')
+  .replace(/>/g, '&gt;')
+  .replace(/"/g, '&quot;')
+  .replace(/'/g, '&#039;');
+
+const categories = {
+  masuk: "Surat masuk", keluar: "Surat keluar", nota: "Nota dinas",
+  kontrak: "Kontrak & MoU", sk: "SK & keputusan", foto: "Arsip foto"
+};
+const catDesc = {
+  semua: "Seluruh arsip yang tersimpan di sistem.",
+  masuk: "Surat yang diterima dari pihak luar instansi.",
+  keluar: "Surat resmi yang dikirim ke pihak luar.",
+  nota: "Catatan dan instruksi internal antar bagian.",
+  kontrak: "Perjanjian kerja sama dan nota kesepahaman.",
+  sk: "Surat keputusan dan penetapan resmi.",
+  foto: "Dokumentasi kegiatan dalam bentuk gambar.",
+  sampah: "Dokumen yang telah dihapus, tersimpan sementara."
+};
+
+const STORAGE_KEY = 'arsipin_data_v1';
+const dataContoh = [
+  {id:1, title:"Surat Undangan Rapat Koordinasi", no:"045/UND/IX/2026", cat:"masuk", type:"pdf", size:"320 KB", date:"2026-09-01", from:"Bagian Umum", fileData:null, fileName:null},
+  {id:2, title:"Surat Permohonan Kerja Sama", no:"012/PKS/VIII/2026", cat:"masuk", type:"pdf", size:"410 KB", date:"2026-08-27", from:"PT Sumber Jaya", fileData:null, fileName:null},
+  {id:3, title:"Balasan Konfirmasi Kehadiran", no:"046/BLS/IX/2026", cat:"masuk", type:"doc", size:"150 KB", date:"2026-08-20", from:"Dinas Pendidikan", fileData:null, fileName:null},
+  {id:4, title:"Surat Keterangan Magang", no:"078/SK-MG/VIII/2026", cat:"keluar", type:"pdf", size:"280 KB", date:"2026-08-30", from:"Bagian Kepegawaian", fileData:null, fileName:null},
+  {id:5, title:"Surat Pemberitahuan Libur", no:"079/PMB/VIII/2026", cat:"keluar", type:"doc", size:"190 KB", date:"2026-08-18", from:"Bagian Umum", fileData:null, fileName:null},
+  {id:6, title:"Nota Dinas Perubahan Jadwal", no:"ND-021/IX/2026", cat:"nota", type:"pdf", size:"95 KB", date:"2026-09-02", from:"Sekretariat", fileData:null, fileName:null},
+  {id:7, title:"Nota Dinas Evaluasi Triwulan", no:"ND-018/VIII/2026", cat:"nota", type:"doc", size:"210 KB", date:"2026-08-15", from:"Bagian Perencanaan", fileData:null, fileName:null},
+  {id:8, title:"Kontrak Sewa Peralatan Kantor", no:"KTR-009/2026", cat:"kontrak", type:"pdf", size:"540 KB", date:"2026-08-10", from:"CV Mitra Guna", fileData:null, fileName:null},
+  {id:9, title:"MoU Program Magang Mahasiswa", no:"MOU-003/2026", cat:"kontrak", type:"pdf", size:"470 KB", date:"2026-07-28", from:"Politeknik Negeri", fileData:null, fileName:null},
+  {id:10, title:"SK Penetapan Panitia Kegiatan", no:"SK-054/2026", cat:"sk", type:"pdf", size:"300 KB", date:"2026-08-05", from:"Pimpinan Instansi", fileData:null, fileName:null},
+  {id:11, title:"SK Pengangkatan Staf Baru", no:"SK-041/2026", cat:"sk", type:"pdf", size:"260 KB", date:"2026-07-14", from:"Bagian Kepegawaian", fileData:null, fileName:null},
+  {id:12, title:"Dokumentasi Kegiatan Bakti Sosial", no:"FOTO-002/2026", cat:"foto", type:"img", size:"2.1 MB", date:"2026-08-22", from:"Humas", fileData:null, fileName:null},
+];
+
+function muatData(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw){
+      const parsed = JSON.parse(raw);
+      return {docs: parsed.docs || [], trash: parsed.trash || []};
+    }
+  }catch(e){ /* localStorage tidak tersedia atau data rusak, pakai data contoh */ }
+  return {docs: dataContoh, trash: []};
+}
+function simpanData(){
+  try{
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({docs, trash}));
+  }catch(e){
+    showToast('Penyimpanan browser penuh, data terbaru belum tersimpan', 'rust');
+  }
+}
+
+const awal = muatData();
+let docs = awal.docs;
+let trash = awal.trash;
+let currentCat = "semua";
+let currentView = "grid";
+let selectedRole = 'admin';
+
+const authScreen = document.getElementById('authScreen');
+const appShell = document.getElementById('appShell');
+const roleOptions = document.querySelectorAll('.role-option');
+const enterDashboardBtn = document.getElementById('enterDashboardBtn');
+const passwordInput = document.getElementById('passwordInput');
+
+const validPasswords = {
+  admin: 'admin123',
+  pengawas: 'pengawas123'
+};
+
+roleOptions.forEach(option => {
+  option.addEventListener('click', () => {
+    roleOptions.forEach(item => item.classList.toggle('selected', item === option));
+    const radio = option.querySelector('input');
+    radio.checked = true;
+    selectedRole = radio.value;
+  });
+});
+
+enterDashboardBtn.addEventListener('click', () => {
+  const password = passwordInput.value.trim();
+  const expected = validPasswords[selectedRole];
+
+  if (!password) {
+    showToast('Silakan masukkan sandi terlebih dahulu', 'rust');
+    passwordInput.focus();
+    return;
+  }
+
+  if (password !== expected) {
+    showToast('Sandi salah untuk peran ini', 'rust');
+    passwordInput.focus();
+    return;
+  }
+
+  authScreen.classList.add('hidden');
+  appShell.classList.remove('hidden');
+  showToast(selectedRole === 'admin' ? 'Login sebagai Admin berhasil' : 'Login sebagai Pengawas berhasil');
+});
+
+const gridView = document.getElementById('gridView');
+const listView = document.getElementById('listView');
+const emptyState = document.getElementById('emptyState');
+const pageTitle = document.getElementById('pageTitle');
+const pageDesc = document.getElementById('pageDesc');
+const resultCount = document.getElementById('resultCount');
+const searchInput = document.getElementById('searchInput');
+const sortSelect = document.getElementById('sortSelect');
+
+function iconFor(type){
+  if(type==='pdf') return {html:svgIcons.pdf, cls:'doc-type-pdf'};
+  if(type==='img') return {html:svgIcons.img, cls:'doc-type-img'};
+  return {html:svgIcons.doc, cls:''};
+}
+
+function formatDate(d){
+  const dt = new Date(d);
+  return dt.toLocaleDateString('id-ID', {day:'numeric', month:'short', year:'numeric'});
+}
+
+function getFiltered(){
+  let list = currentCat === 'sampah' ? trash : docs.filter(d => currentCat==='semua' || d.cat===currentCat);
+  const q = searchInput.value.trim().toLowerCase();
+  if(q){
+    list = list.filter(d => d.title.toLowerCase().includes(q) || d.no.toLowerCase().includes(q));
+  }
+  const sort = sortSelect.value;
+  list = [...list];
+  if(sort==='terbaru') list.sort((a,b)=> new Date(b.date)-new Date(a.date));
+  if(sort==='terlama') list.sort((a,b)=> new Date(a.date)-new Date(b.date));
+  if(sort==='az') list.sort((a,b)=> a.title.localeCompare(b.title));
+  return list;
+}
+
+function render(){
+  const list = getFiltered();
+  pageTitle.textContent = currentCat==='semua' ? 'Semua dokumen' : (currentCat==='sampah' ? 'Terhapus' : categories[currentCat]);
+  pageDesc.textContent = catDesc[currentCat];
+  resultCount.textContent = list.length + ' dokumen';
+
+  emptyState.classList.toggle('hidden', list.length>0);
+  gridView.classList.toggle('hidden', currentView!=='grid' || list.length===0);
+  listView.classList.toggle('hidden', currentView!=='list' || list.length===0);
+
+  gridView.innerHTML = list.map((d, idx)=>{
+    const ic = iconFor(d.type);
+    return `<div class="doc-card" data-id="${d.id}" style="animation-delay:${idx * 60}ms;">
+      <div class="doc-icon-row">
+        <div class="doc-icon ${ic.cls}">${ic.html}</div>
+        <div class="doc-menu-wrap">
+          <span class="doc-menu" data-menu="${d.id}">${svgIcons.dots}</span>
+          <div class="doc-action-menu" data-menu-panel="${d.id}">
+            <button class="menu-item" data-action="detail" data-id="${d.id}">Lihat detail</button>
+            <button class="menu-item" data-action="edit" data-id="${d.id}">Edit dokumen</button>
+            <button class="menu-item danger" data-action="delete" data-id="${d.id}">Hapus</button>
+          </div>
+        </div>
+      </div>
+      <div class="doc-title">${escapeHtml(d.title)}</div>
+      <div class="doc-meta">${escapeHtml(d.no)} · ${formatDate(d.date)}</div>
+      <span class="doc-tag">${escapeHtml(currentCat==='sampah' ? categories[d.cat] || 'Arsip' : categories[d.cat] || 'Umum')}</span>
+    </div>`;
+  }).join('');
+
+  listView.innerHTML = list.map((d, idx)=>{
+    const ic = iconFor(d.type);
+    return `<div class="doc-row" data-id="${d.id}" style="animation-delay:${idx * 40}ms;">
+      <div class="row-icon">${ic.html}</div>
+      <div>
+        <div style="font-weight:600;">${escapeHtml(d.title)}</div>
+        <div class="doc-meta">${escapeHtml(d.no)}</div>
+      </div>
+      <div class="doc-meta">${escapeHtml(d.from)}</div>
+      <div class="doc-meta">${formatDate(d.date)}</div>
+      <div class="doc-meta">${escapeHtml(d.size)}</div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('trashCount').textContent = trash.length;
+  document.querySelectorAll('.nav-item').forEach(el=>{
+    el.classList.toggle('active', el.dataset.cat===currentCat);
+  });
+
+  gridView.querySelectorAll('.doc-card').forEach(el=>{
+    el.addEventListener('click', (e)=>{
+      if(e.target.closest('[data-menu]') || e.target.closest('.menu-item')) return;
+      openDetail(Number(el.dataset.id));
+    });
+  });
+  gridView.querySelectorAll('.doc-menu').forEach(el=>{
+    el.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      const wrap = el.closest('.doc-menu-wrap');
+      const isOpen = wrap.classList.contains('open');
+      document.querySelectorAll('.doc-menu-wrap').forEach(w => w.classList.remove('open'));
+      if(!isOpen) wrap.classList.add('open');
+    });
+  });
+  gridView.querySelectorAll('.menu-item').forEach(el=>{
+    el.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      const action = el.dataset.action;
+      const id = Number(el.dataset.id);
+      const wrap = el.closest('.doc-menu-wrap');
+      wrap.classList.remove('open');
+      if(action === 'detail') openDetail(id);
+      if(action === 'edit') openEditModal(id);
+      if(action === 'delete') confirmDeleteDocument(id);
+    });
+  });
+  document.addEventListener('click', (e)=>{
+    if(!e.target.closest('.doc-menu-wrap') && !e.target.closest('.menu-item')) {
+      document.querySelectorAll('.doc-menu-wrap').forEach(w => w.classList.remove('open'));
+    }
+  });
+  listView.querySelectorAll('.doc-row').forEach(el=>{
+    el.addEventListener('click', ()=> openDetail(Number(el.dataset.id)));
+  });
+}
+
+document.getElementById('navList').addEventListener('click', (e)=>{
+  const item = e.target.closest('.nav-item');
+  if(!item) return;
+  currentCat = item.dataset.cat;
+  render();
+});
+searchInput.addEventListener('input', render);
+sortSelect.addEventListener('change', render);
+document.getElementById('gridBtn').addEventListener('click', ()=>{
+  currentView='grid';
+  document.getElementById('gridBtn').classList.add('active');
+  document.getElementById('listBtn').classList.remove('active');
+  render();
+});
+document.getElementById('listBtn').addEventListener('click', ()=>{
+  currentView='list';
+  document.getElementById('listBtn').classList.add('active');
+  document.getElementById('gridBtn').classList.remove('active');
+  render();
+});
+
+function showToast(msg, tone){
+  const wrap = document.getElementById('toastWrap');
+  const t = document.createElement('div');
+  t.className = 'toast' + (tone==='rust' ? ' rust' : '');
+  t.innerHTML = (tone==='rust' ? svgIcons.trash : svgIcons.check) + '<span>' + msg + '</span>';
+  wrap.appendChild(t);
+  setTimeout(()=>{ t.remove(); }, 2800);
+}
+
+function quickDelete(id){
+  const idx = docs.findIndex(d=>d.id===id);
+  if(idx===-1) return;
+  const [removed] = docs.splice(idx,1);
+  trash.push(removed);
+  simpanData();
+  showToast('Dokumen dipindahkan ke Terhapus', 'rust');
+  render();
+}
+
+function confirmDeleteDocument(id, source = 'docs'){
+  const target = source === 'trash' ? trash : docs;
+  const idx = target.findIndex(d => d.id === id);
+  if(idx === -1) return;
+  const item = target[idx];
+  const overlay = document.createElement('div');
+  overlay.className = 'overlay center';
+  overlay.innerHTML = `
+    <div class="modal">
+      <button class="modal-close">${svgIcons.x}</button>
+      <h2 class="serif" style="margin:0 0 8px;">Konfirmasi penghapusan</h2>
+      <div style="font-size:13px;color:var(--ink-muted);margin-bottom:18px;">
+        Anda yakin ingin menghapus <strong>${escapeHtml(item.title)}</strong>?
+      </div>
+      <div class="action-row" style="margin-top:0;">
+        <button class="btn btn-secondary" id="cancelDelete">Batal</button>
+        <button class="btn btn-danger" id="confirmDelete">${svgIcons.trash} Hapus</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+  overlay.addEventListener('click', (e)=>{ if(e.target===overlay) overlay.remove(); });
+  overlay.querySelector('.modal-close').addEventListener('click', ()=> overlay.remove());
+  overlay.querySelector('#cancelDelete').addEventListener('click', ()=> overlay.remove());
+  overlay.querySelector('#confirmDelete').addEventListener('click', ()=>{
+    const targetIndex = target.findIndex(d => d.id === id);
+    if(targetIndex !== -1){
+      const [removed] = target.splice(targetIndex, 1);
+      if(source !== 'trash') trash.push(removed);
+      simpanData();
+      showToast(source === 'trash' ? 'Dokumen dihapus permanen' : 'Dokumen dipindahkan ke Terhapus', 'rust');
+      overlay.remove();
+      render();
+    }
+  });
+}
+
+function openEditModal(id){
+  const d = docs.find(item => item.id === id);
+  if(!d) return;
+  const overlay = document.createElement('div');
+  overlay.className = 'overlay center';
+  overlay.innerHTML = `
+    <div class="modal">
+      <button class="modal-close">${svgIcons.x}</button>
+      <h2 class="serif" style="margin:0 0 4px;">Edit dokumen</h2>
+      <div style="font-size:12.5px;color:var(--ink-muted);margin-bottom:18px;">Perbarui informasi arsip yang dipilih.</div>
+      <div class="form-group">
+        <label>Judul dokumen</label>
+        <input type="text" id="editTitle" value="${escapeHtml(d.title)}">
+      </div>
+      <div class="form-group">
+        <label>Kategori</label>
+        <select id="editCat">
+          <option value="masuk" ${d.cat==='masuk' ? 'selected' : ''}>Surat masuk</option>
+          <option value="keluar" ${d.cat==='keluar' ? 'selected' : ''}>Surat keluar</option>
+          <option value="nota" ${d.cat==='nota' ? 'selected' : ''}>Nota dinas</option>
+          <option value="kontrak" ${d.cat==='kontrak' ? 'selected' : ''}>Kontrak & MoU</option>
+          <option value="sk" ${d.cat==='sk' ? 'selected' : ''}>SK & keputusan</option>
+          <option value="foto" ${d.cat==='foto' ? 'selected' : ''}>Arsip foto</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Nomor arsip</label>
+        <input type="text" id="editNo" value="${escapeHtml(d.no)}">
+      </div>
+      <div class="form-group">
+        <label>Diterima dari / pihak</label>
+        <input type="text" id="editFrom" value="${escapeHtml(d.from)}">
+      </div>
+      <div class="action-row" style="margin-top:8px;">
+        <button class="btn btn-secondary" id="cancelEdit">Batal</button>
+        <button class="btn btn-primary" id="saveEdit">${svgIcons.check} Simpan</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+  overlay.addEventListener('click', (e)=>{ if(e.target===overlay) overlay.remove(); });
+  overlay.querySelector('.modal-close').addEventListener('click', ()=> overlay.remove());
+  overlay.querySelector('#cancelEdit').addEventListener('click', ()=> overlay.remove());
+  overlay.querySelector('#saveEdit').addEventListener('click', ()=>{
+    const title = overlay.querySelector('#editTitle').value.trim();
+    const no = overlay.querySelector('#editNo').value.trim();
+    const from = overlay.querySelector('#editFrom').value.trim();
+    const cat = overlay.querySelector('#editCat').value;
+    if(!title){
+      showToast('Judul dokumen wajib diisi', 'rust');
+      overlay.querySelector('#editTitle').focus();
+      return;
+    }
+    d.title = title;
+    d.no = no || d.no;
+    d.from = from || d.from;
+    d.cat = cat;
+    simpanData();
+    showToast('Informasi dokumen diperbarui');
+    overlay.remove();
+    render();
+  });
+}
+
+/* DETAIL PANEL */
+function openDetail(id){
+  const source = currentCat==='sampah' ? trash : docs;
+  const d = source.find(x=>x.id===id);
+  if(!d) return;
+  const ic = iconFor(d.type);
+  const isTrash = currentCat === 'sampah';
+  const overlay = document.createElement('div');
+  overlay.className = 'overlay';
+  overlay.innerHTML = `
+    <div class="panel">
+      <button class="panel-close">${svgIcons.x}</button>
+      <div class="detail-icon ${ic.cls}">${ic.html}</div>
+      <div class="detail-title serif">${escapeHtml(d.title)}</div>
+      <div class="detail-sub">${escapeHtml(d.no)}</div>
+
+      <div class="detail-section">
+        <div class="detail-label">Informasi dokumen</div>
+        <div class="detail-row"><span>Kategori</span><span>${escapeHtml(categories[d.cat] || 'Umum')}</span></div>
+        <div class="detail-row"><span>Diterima dari</span><span>${escapeHtml(d.from)}</span></div>
+        <div class="detail-row"><span>Tanggal</span><span>${formatDate(d.date)}</span></div>
+        <div class="detail-row"><span>Ukuran file</span><span>${escapeHtml(d.size)}</span></div>
+        <div class="detail-row"><span>Format</span><span>${d.type.toUpperCase()}</span></div>
+      </div>
+
+      <div class="action-row">
+        ${isTrash ? `
+          <button class="btn" id="restoreBtn">${svgIcons.check} Pulihkan</button>
+          <button class="btn btn-danger" id="permDeleteBtn">${svgIcons.trash} Hapus permanen</button>
+        ` : `
+          <button class="btn" id="downloadBtn">${svgIcons.download} Unduh</button>
+          <button class="btn" id="shareBtn">${svgIcons.share} Bagikan</button>
+          <button class="btn btn-secondary" id="editBtn">${svgIcons.check} Edit</button>
+          <button class="btn btn-danger" id="deleteBtn">${svgIcons.trash} Hapus</button>
+        `}
+      </div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+
+  overlay.addEventListener('click',(e)=>{ if(e.target===overlay) overlay.remove(); });
+  overlay.querySelector('.panel-close').addEventListener('click', ()=> overlay.remove());
+
+  if(!isTrash){
+    overlay.querySelector('#downloadBtn').addEventListener('click', ()=>{
+      if(d.fileData){
+        const a = document.createElement('a');
+        a.href = d.fileData;
+        a.download = d.fileName || (d.title + '.' + d.type);
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        showToast('Mengunduh "' + d.title + '"');
+      } else {
+        showToast('Dokumen contoh ini belum punya file asli, coba unggah dokumen baru', 'rust');
+      }
+    });
+    overlay.querySelector('#shareBtn').addEventListener('click', ()=>{
+      showToast('Tautan berbagi disalin');
+    });
+    overlay.querySelector('#editBtn').addEventListener('click', ()=>{
+      overlay.remove();
+      openEditModal(d.id);
+    });
+    overlay.querySelector('#deleteBtn').addEventListener('click', ()=>{
+      confirmDeleteDocument(d.id, 'docs');
+      overlay.remove();
+    });
+  } else {
+    overlay.querySelector('#restoreBtn').addEventListener('click', ()=>{
+      const idx = trash.findIndex(x=>x.id===d.id);
+      trash.splice(idx,1);
+      docs.push(d);
+      simpanData();
+      showToast('Dokumen dipulihkan');
+      overlay.remove();
+      render();
+    });
+    overlay.querySelector('#permDeleteBtn').addEventListener('click', ()=>{
+      confirmDeleteDocument(d.id, 'trash');
+      overlay.remove();
+    });
+  }
+}
+
+/* UPLOAD MODAL */
+document.getElementById('uploadBtn').addEventListener('click', ()=>{
+  const overlay = document.createElement('div');
+  overlay.className = 'overlay center';
+  overlay.innerHTML = `
+    <div class="modal">
+      <button class="modal-close">${svgIcons.x}</button>
+      <h2 class="serif" style="margin:0 0 4px;">Unggah dokumen baru</h2>
+      <div style="font-size:12.5px;color:var(--ink-muted);margin-bottom:18px;">Lengkapi data untuk menyimpan dokumen ke arsip.</div>
+      <div class="dropzone" id="dropzone" style="cursor:pointer;">
+        ${svgIcons.upload}
+        <div id="dropzoneText">Klik untuk memilih file, atau seret file ke sini</div>
+        <input type="file" id="fFile" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" style="display:none;">
+      </div>
+      <div id="fFileErr" style="display:none;color:var(--danger);font-size:12px;margin:-10px 0 14px;">Pilih file dokumen terlebih dahulu.</div>
+      <div class="form-group">
+        <label>Judul dokumen</label>
+        <input type="text" id="fTitle" placeholder="Contoh: Surat Undangan Rapat">
+        <div id="fTitleErr" style="display:none;color:var(--danger);font-size:12px;margin-top:4px;">Judul dokumen wajib diisi.</div>
+      </div>
+      <div class="form-group">
+        <label>Kategori</label>
+        <select id="fCat">
+          <option value="masuk">Surat masuk</option>
+          <option value="keluar">Surat keluar</option>
+          <option value="nota">Nota dinas</option>
+          <option value="kontrak">Kontrak & MoU</option>
+          <option value="sk">SK & keputusan</option>
+          <option value="foto">Arsip foto</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Nomor arsip</label>
+        <input type="text" id="fNo" placeholder="Contoh: 050/UND/IX/2026">
+      </div>
+      <div class="action-row" style="margin-top:8px;">
+        <button class="btn" id="cancelUpload">Batal</button>
+        <button class="btn btn-primary" id="confirmUpload" style="flex:1;">${svgIcons.check} Simpan dokumen</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+  overlay.addEventListener('click',(e)=>{ if(e.target===overlay) overlay.remove(); });
+  overlay.querySelector('.modal-close').addEventListener('click', ()=> overlay.remove());
+  overlay.querySelector('#cancelUpload').addEventListener('click', ()=> overlay.remove());
+
+  const dropzone = overlay.querySelector('#dropzone');
+  const fileInput = overlay.querySelector('#fFile');
+  const dropzoneText = overlay.querySelector('#dropzoneText');
+  const fFileErr = overlay.querySelector('#fFileErr');
+  let selectedFile = null;
+
+  dropzone.addEventListener('click', ()=> fileInput.click());
+  dropzone.addEventListener('dragover', (e)=>{ e.preventDefault(); dropzone.style.borderColor = 'var(--forest)'; });
+  dropzone.addEventListener('dragleave', ()=>{ dropzone.style.borderColor = ''; });
+  dropzone.addEventListener('drop', (e)=>{
+    e.preventDefault();
+    dropzone.style.borderColor = '';
+    if(e.dataTransfer.files.length){
+      fileInput.files = e.dataTransfer.files;
+      handleFileChoice();
+    }
+  });
+  fileInput.addEventListener('change', handleFileChoice);
+
+  function handleFileChoice(){
+    const f = fileInput.files[0];
+    if(!f) return;
+    selectedFile = f;
+    dropzoneText.textContent = f.name + ' (' + formatSize(f.size) + ')';
+    fFileErr.style.display = 'none';
+    if(!overlay.querySelector('#fTitle').value.trim()){
+      overlay.querySelector('#fTitle').value = f.name.replace(/\.[^/.]+$/, '');
+    }
+  }
+
+  overlay.querySelector('#confirmUpload').addEventListener('click', ()=>{
+    const titleEl = overlay.querySelector('#fTitle');
+    const errEl = overlay.querySelector('#fTitleErr');
+    const title = titleEl.value.trim();
+    let valid = true;
+    if(!title){
+      errEl.style.display = 'block';
+      valid = false;
+    } else {
+      errEl.style.display = 'none';
+    }
+    if(!selectedFile){
+      fFileErr.style.display = 'block';
+      valid = false;
+    }
+    if(!valid){
+      if(!title) titleEl.focus();
+      return;
+    }
+
+    const cat = overlay.querySelector('#fCat').value;
+    let no = overlay.querySelector('#fNo').value.trim();
+    if(!no) no = 'ARS-' + Math.floor(100+Math.random()*900) + '/2026';
+    const ext = (selectedFile.name.split('.').pop() || 'pdf').toLowerCase();
+    const type = ['jpg','jpeg','png'].includes(ext) ? 'img' : (['doc','docx'].includes(ext) ? 'doc' : 'pdf');
+
+    const reader = new FileReader();
+    reader.onload = function(){
+      const newId = Math.max(0, ...docs.map(d=>d.id), ...trash.map(d=>d.id)) + 1;
+      docs.unshift({
+        id:newId, title, no, cat, type,
+        size: formatSize(selectedFile.size),
+        date: new Date().toISOString().slice(0,10),
+        from:'Diunggah manual',
+        fileData: reader.result,
+        fileName: selectedFile.name
+      });
+      simpanData();
+      showToast('Dokumen berhasil disimpan');
+      overlay.remove();
+      currentCat = 'semua';
+      render();
+    };
+    reader.onerror = function(){
+      showToast('Gagal membaca file, coba lagi', 'rust');
+    };
+    reader.readAsDataURL(selectedFile);
+  });
+
+  overlay.querySelector('#fTitle').addEventListener('input', ()=>{
+    overlay.querySelector('#fTitleErr').style.display = 'none';
+  });
+});
+
+function formatSize(bytes){
+  if(bytes < 1024) return bytes + ' B';
+  if(bytes < 1024*1024) return (bytes/1024).toFixed(0) + ' KB';
+  return (bytes/(1024*1024)).toFixed(1) + ' MB';
+}
+
+render();
+</script>
+</body>
+</html>
